@@ -2,17 +2,400 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <title>欢迎来到我的网站</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>中国金融机构全景分析平台</title>
     <style>
-        body { font-family: -apple-system, sans-serif; background: linear-gradient(135deg, #667eea, #764ba2); min-height: 100vh; display: flex; justify-content: center; align-items: center; }
-        .container { background: white; padding: 60px; border-radius: 20px; text-align: center; box-shadow: 0 20px 60px rgba(0,0,0,0.3); }
-        h1 { color: #333; }
+        :root {
+            --primary: #e94560;
+            --secondary: #f39c12;
+            --bg-dark: #0f0f23;
+            --bg-card: #1a1a2e;
+            --text-light: #ffffff;
+            --text-muted: #a0a0a0;
+            --accent: #00d9ff;
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Microsoft YaHei", sans-serif;
+            background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%);
+            min-height: 100vh;
+            color: var(--text-light);
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #0f3460 0%, #16213e 100%);
+            padding: 40px;
+            text-align: center;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+            border-bottom: 4px solid var(--primary);
+        }
+        
+        .header h1 {
+            font-size: 2.8em;
+            margin-bottom: 15px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .header p { color: var(--text-muted); font-size: 1.2em; }
+        
+        .header .stats {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin-top: 25px;
+            flex-wrap: wrap;
+        }
+        
+        .header .stat { text-align: center; }
+        .header .stat-value { font-size: 1.8em; font-weight: bold; color: var(--secondary); }
+        .header .stat-label { font-size: 0.9em; color: var(--text-muted); }
+        
+        .breadcrumb {
+            background: rgba(255,255,255,0.05);
+            padding: 15px 40px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .breadcrumb a { color: var(--primary); text-decoration: none; cursor: pointer; }
+        .breadcrumb a:hover { color: var(--secondary); text-decoration: underline; }
+        .breadcrumb span { color: var(--text-muted); }
+        .breadcrumb .current { color: var(--text-light); font-weight: 600; }
+        
+        .container { max-width: 1600px; margin: 0 auto; padding: 40px; }
+        
+        .level-title {
+            font-size: 2em;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 3px solid var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 25px;
+            margin-bottom: 50px;
+        }
+        
+        .card {
+            background: linear-gradient(145deg, #1e2a4a 0%, #16213e 100%);
+            border-radius: 20px;
+            padding: 30px;
+            cursor: pointer;
+            transition: all 0.4s;
+            border: 1px solid rgba(233, 69, 96, 0.2);
+            position: relative;
+        }
+        
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 5px;
+            height: 100%;
+            background: linear-gradient(180deg, var(--primary), var(--secondary));
+            transform: scaleY(0);
+            transition: transform 0.4s;
+        }
+        
+        .card:hover { transform: translateY(-8px); box-shadow: 0 20px 50px rgba(233, 69, 96, 0.3); border-color: var(--primary); }
+        .card:hover::before { transform: scaleY(1); }
+        
+        .card-icon { font-size: 3em; margin-bottom: 20px; }
+        .card h3 { font-size: 1.4em; margin-bottom: 12px; }
+        .card p { color: var(--text-muted); line-height: 1.6; }
+        
+        .card .arrow {
+            position: absolute;
+            right: 25px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--primary);
+            font-size: 1.8em;
+            opacity: 0;
+            transition: all 0.3s;
+        }
+        
+        .card:hover .arrow { opacity: 1; }
+        
+        .detail-card {
+            background: linear-gradient(145deg, #1e2a4a 0%, #16213e 100%);
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 25px;
+            border: 1px solid rgba(233, 69, 96, 0.3);
+        }
+        
+        .detail-header {
+            display: flex;
+            align-items: center;
+            gap: 25px;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            flex-wrap: wrap;
+        }
+        
+        .detail-header .icon { font-size: 3.5em; }
+        .detail-header h2 { font-size: 2em; }
+        .detail-header .rank { background: var(--primary); padding: 8px 20px; border-radius: 25px; }
+        
+        .detail-section { margin-bottom: 30px; }
+        .detail-section h4 { color: var(--primary); font-size: 1.2em; margin-bottom: 15px; }
+        .detail-section p { color: #d0d0d0; line-height: 1.9; padding-left: 25px; }
+        
+        .tag {
+            display: inline-block;
+            background: rgba(233, 69, 96, 0.15);
+            color: var(--primary);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+        
+        .tag.success { background: rgba(0, 217, 255, 0.15); color: var(--accent); }
+        .tag.warning { background: rgba(243, 156, 18, 0.15); color: var(--secondary); }
+        
+        .stat-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 20px;
+            margin: 25px 0;
+        }
+        
+        .stat-item {
+            background: rgba(255,255,255,0.05);
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+        }
+        
+        .stat-item .value { font-size: 1.6em; color: var(--secondary); font-weight: bold; }
+        .stat-item .label { color: var(--text-muted); font-size: 0.9em; margin-top: 8px; }
+        
+        .back-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-size: 1em;
+            margin-bottom: 25px;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .back-btn:hover { transform: translateX(-8px); box-shadow: 0 10px 30px rgba(233, 69, 96, 0.4); }
+        
+        .intro {
+            background: linear-gradient(145deg, #1e2a4a 0%, #16213e 100%);
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 40px;
+            border: 1px solid rgba(233, 69, 96, 0.3);
+        }
+        
+        .intro h2 { color: var(--primary); margin-bottom: 20px; }
+        .intro p { color: #d0d0d0; line-height: 1.9; font-size: 1.05em; }
+        .intro .highlight { color: var(--secondary); font-weight: bold; }
+        
+        .hidden { display: none !important; }
+        
+        .coop-score {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: bold;
+        }
+        
+        .coop-score.high { background: rgba(0, 217, 255, 0.2); color: var(--accent); }
+        .coop-score.medium { background: rgba(243, 156, 18, 0.2); color: var(--secondary); }
+        .coop-score.low { background: rgba(233, 69, 96, 0.2); color: var(--primary); }
+        
+        .strategy-box {
+            background: linear-gradient(135deg, rgba(0, 217, 255, 0.1), rgba(233, 69, 96, 0.1));
+            border: 1px solid var(--accent);
+            border-radius: 15px;
+            padding: 25px;
+            margin-top: 20px;
+        }
+        
+        .strategy-box h4 { color: var(--accent) !important; margin-bottom: 15px !important; }
+        
+        @media (max-width: 768px) {
+            .header h1 { font-size: 1.8em; }
+            .grid { grid-template-columns: 1fr; }
+            .container { padding: 20px; }
+        }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>🎉 欢迎访问</h1>
-        <p>这是由 AI 助手为您创建的网页</p>
+    <div class="header">
+        <h1>🏦 中国金融机构全景分析平台</h1>
+        <p>资管行业深度分析 | 业务拓展决策支持系统 | 借鉴美国最佳实践</p>
+        <div class="stats">
+            <div class="stat"><div class="stat-value">179万亿+</div><div class="stat-label">资产管理规模</div></div>
+            <div class="stat"><div class="stat-value">400+</div><div class="stat-label">金融机构</div></div>
+            <div class="stat"><div class="stat-value">6大类</div><div class="stat-label">机构类型</div></div>
+            <div class="stat"><div class="stat-value">1000+</div><div class="stat-label">潜在客户</div></div>
+        </div>
     </div>
-</body>
-</html>
+    
+    <div class="breadcrumb" id="breadcrumb"><span class="current">首页</span></div>
+    
+    <div class="container">
+        <div id="level1">
+            <div class="intro">
+                <h2>📊 中国资产管理行业概览</h2>
+                <p>截至2025年三季度末，中国资产管理行业规模达<span class="highlight">179.33万亿元</span>。其中：银行理财32.13万亿、公募基金36.74万亿、信托32.43万亿、保险资金36.23万亿、券商资管12.58万亿、私募基金20.74万亿。行业正处于转型关键期，通道业务收缩，主动管理能力成为核心竞争力。本平台整合美国金融机构客户管理最佳实践，为券商资管业务拓展提供决策支持。</p>
+            </div>
+            <h2 class="level-title"><span class="icon">📁</span> 选择机构类型</h2>
+            <div class="grid" id="categoryGrid"></div>
+        </div>
+        
+        <div id="level2" class="hidden">
+            <button class="back-btn" onclick="goBack()">← 返回上一级</button>
+            <h2 class="level-title" id="level2Title"></h2>
+            <div class="grid" id="sizeGrid"></div>
+        </div>
+        
+        <div id="level3" class="hidden">
+            <button class="back-btn" onclick="goBack()">← 返回上一级</button>
+            <h2 class="level-title" id="level3Title"></h2>
+            <div class="grid" id="institutionGrid"></div>
+        </div>
+        
+        <div id="level4" class="hidden">
+            <button class="back-btn" onclick="goBack()">← 返回上一级</button>
+            <div id="detailContent"></div>
+        </div>
+    </div>
+
+    <script>
+        let navHistory = [];
+        
+        const data = {
+            banks: {
+                name: "🏦 银行",
+                icon: "🏦",
+                intro: "中国银行业总资产达342.15万亿元(2025年)，是金融体系的核心。",
+                sizes: {
+                    large: { name: "大型银行 (万亿级)", icon: "🏆", desc: "国有大行和头部股份制银行，资产规模10万亿+",
+                        institutions: [
+                            {name: "工商银行", rank: 1, assets: "44.64万亿", profit: "3654亿", features: ["全球最大银行", "网点覆盖最广", "科技实力最强"], business: ["公司金融", "个人金融", "国际金融"], coopScore: 30, strategy: "工行规模巨大但门槛极高，需有突出业绩或独特策略方可合作。建议专注其私人银行部门，或通过旗下工银瑞信、工银理财间接合作。", partners: ["工银瑞信", "工银理财"], status: "待开发"},
+                            {name: "建设银行", rank: 2, assets: "40.47万亿", profit: "3354亿", features: ["住房金融领先", "风险管理典范"], business: ["住房租赁", "普惠金融"], coopScore: 50, strategy: "建行旗下建信理财规模1.6万亿，是优质合作伙伴。可争取理财子FOF管理人资格，或共同开发养老金融产品。", partners: ["建信基金", "建信理财"], status: "重点突破"},
+                            {name: "农业银行", rank: 3, assets: "38.24万亿", profit: "2983亿", features: ["县域金融领先", "网点最多"], business: ["三农金融", "县域金融"], coopScore: 60, strategy: "农行网点下沉最深，是下沉市场最佳渠道。可借助农银理财合作三农相关理财。", partners: ["农银基金", "农银理财"], status: "重点突破"},
+                            {name: "中国银行", rank: 4, assets: "36.12万亿", profit: "2186亿", features: ["国际化程度最高", "跨境业务强"], business: ["跨境金融", "国际结算"], coopScore: 45, strategy: "中行海外网络强大，是跨境业务首选合作方。可合作开发跨境理财、QDII产品。", partners: ["中银基金", "中银理财"], status: "战略合作"},
+                            {name: "招商银行", rank: 5, assets: "11.18万亿", profit: "1485亿", features: ["零售之王", "服务体验最佳", "私人银行领先"], business: ["私人银行", "财富管理"], coopScore: 95, strategy: "【最高优先级】招行是最优质合作伙伴，招银理财规模2.47万亿居行业第一。需深度合作代销、定制产品、VIP客户共享。", partners: ["招银基金", "招银理财"], status: "核心伙伴"},
+                            {name: "交通银行", rank: 6, assets: "9.76万亿", profit: "932亿", features: ["历史悠久", "综合化经营"], business: ["综合金融", "财富管理"], coopScore: 70, strategy: "交行信用卡业务突出，可合作信用卡分期理财、交银理财代销业务。", partners: ["交银基金", "交银理财"], status: "重点突破"},
+                            {name: "邮储银行", rank: 7, assets: "16.22万亿", profit: "962亿", features: ["网点覆盖农村", "存款基础好"], business: ["普惠金融", "储蓄"], coopScore: 65, strategy: "邮储银行网点深入农村，是下沉市场的优质渠道。可合作推广低门槛理财产品。", partners: ["中邮基金", "中邮理财"], status: "潜力合作"},
+                            {name: "兴业银行", rank: 8, assets: "10.45万亿", profit: "756亿", features: ["绿色金融领先", "同业业务强"], business: ["绿色金融", "同业业务"], coopScore: 75, strategy: "兴业银行同业资源丰富，兴银理财规模2.18万亿。可开展同业合作、资管产品代销。", partners: ["兴银基金", "兴银理财"], status: "战略合作"}
+                        ]
+                    },
+                    medium: { name: "中型银行 (千亿级)", icon: "⭐", desc: "股份制银行和头部城商行，资产规模1-10万亿",
+                        institutions: [
+                            {name: "中信银行", rank: 9, assets: "9.58万亿", profit: "698亿", features: ["对公业务强", "出国金融领先"], business: ["公司银行", "出国金融"], coopScore: 70, strategy: "中信银行公司客户资源丰富，可合作对公理财、现金管理业务。", partners: ["中信证券", "华夏基金"], status: "战略合作"},
+                            {name: "浦发银行", rank: 10, assets: "9.03万亿", profit: "447亿", features: ["科技金融", "数字银行"], business: ["科技金融", "跨境金融"], coopScore: 55, strategy: "浦发银行科技投入大，可合作开发创新型理财产品、数字化财富管理。", partners: ["浦银基金", "浦银理财"], status: "潜力合作"},
+                            {name: "民生银行", rank: 11, assets: "7.76万亿", profit: "352亿", features: ["小微企业金融", "信用卡业务"], business: ["小微金融", "信用卡"], coopScore: 60, strategy: "民生银行小微客户资源丰富，可合作小微企业专属理财、投贷联动。", partners: ["民生基金"], status: "重点突破"},
+                            {name: "光大银行", rank: 12, assets: "7.14万亿", profit: "388亿", features: ["综合金融", "理财业务强"], business: ["综合金融", "财富管理"], coopScore: 65, strategy: "光大银行旗下光大理财规模居前，可合作代销、共建理财品牌。", partners: ["光大基金", "光大理财"], status: "重点突破"},
+                            {name: "平安银行", rank: 13, assets: "5.79万亿", profit: "446亿", features: ["科技赋能", "综合金融", "生态圈优势"], business: ["科技金融", "综合金融"], coopScore: 80, strategy: "平安集团生态强大，可借助平安信托、平安基金等协同合作，综合金融空间大。", partners: ["平安基金", "平安信托"], status: "战略合作"},
+                            {name: "华夏银行", rank: 14, assets: "4.11万亿", profit: "247亿", features: ["绿色金融", "京津冀布局"], business: ["绿色金融", "供应链金融"], coopScore: 50, strategy: "华夏银行区域特色明显，可围绕京津冀企业开展资管业务合作。", partners: ["华夏基金"], status: "潜力合作"},
+                            {name: "北京银行", rank: 15, assets: "3.91万亿", profit: "247亿", features: ["区域银行龙头", "科技金融"], business: ["科技金融", "文化金融"], coopScore: 55, strategy: "北京银行是城商行龙头，可合作京津冀项目融资、地方政府合作。", partners: ["北银基金"], status: "潜力合作"},
+                            {name: "上海银行", rank: 16, assets: "3.22万亿", profit: "248亿", features: ["长三角布局", "跨境金融"], business: ["跨境金融", "养老金融"], coopScore: 60, strategy: "上海银行深耕长三角，可合作跨境理财、养老产品开发。", partners: ["上银基金"], status: "潜力合作"}
+                        ]
+                    },
+                    small: { name: "区域银行 (城商行/农商行)", icon: "🌱", desc: "城商行、农商行，资产规模1万亿以下",
+                        institutions: [
+                            {name: "江苏银行", rank: 1, assets: "3.38万亿", profit: "298亿", features: ["城商行第一", "长三角特色"], business: ["科技金融", "供应链金融"], coopScore: 75, strategy: "江苏银行是城商行标杆，可合作长三角区域项目、上市公司理财。", partners: [], status: "重点突破"},
+                            {name: "宁波银行", rank: 2, assets: "2.89万亿", profit: "271亿", features: ["风控标杆", "私人银行强"], business: ["私人银行", "财富管理"], coopScore: 80, strategy: "宁波银行风控优秀，是城商行尖子生。可合作高端客户理财、债券投资。", partners: [], status: "战略合作"},
+                            {name: "杭州银行", rank: 3, assets: "1.88万亿", profit: "142亿", features: ["科技金融", "数字银行"], business: ["科技金融", "数字金融"], coopScore: 65, strategy: "杭州银行科技属性强，可合作数字资产、科创企业投资。", partners: [], status: "潜力合作"},
+                            {name: "南京银行", rank: 4, assets: "2.14万亿", profit: "185亿", features: ["债券业务强", "大零售转型"], business: ["债券投资", "零售金融"], coopScore: 70, strategy: "南京银行债券投资能力突出，可合作债券投资、委外业务。", partners: [], status: "重点突破"},
+                            {name: "成都银行", rank: 5, assets: "1.05万亿", profit: "115亿", features: ["西部城商行龙头", "政务金融"], business: ["政务金融", "区域金融"], coopScore: 55, strategy: "成都银行是西部龙头，可合作地方政府融资、西部项目。", partners: [], status: "潜力合作"}
+                        ]
+                    }
+                }
+            },
+            wealth: {
+                name: "💰 银行理财子公司",
+                icon: "💰",
+                intro: "截至2025年6月，32家理财子公司管理规模约26万亿，是资管行业最大渠道。",
+                sizes: {
+                    large: { name: "万亿级理财子", icon: "💎", desc: "管理规模2万亿以上，行业头部",
+                        institutions: [
+                            {name: "招银理财", rank: 1, assets: "2.46万亿", profit: "13.64亿", features: ["规模第一", "产品创新强", "渠道优势"], business: ["固收+", "权益理财", "跨境理财"], coopScore: 100, strategy: "【最高优先级】行业标杆，最易合作。争取代销、定制产品、理财子FOF管理人。", partners: ["招商银行", "招商证券"], status: "核心伙伴"},
+                            {name: "兴银理财", rank: 2, assets: "2.32万亿", profit: "12.62亿", features: ["增长最快", "产品线全"], business: ["固收产品", "混合理财"], coopScore: 90, strategy: "兴业银行同业资源丰富，兴银理财增速快。可合作产品代销、投资顾问服务。", partners: ["兴业银行", "兴业证券"], status: "核心伙伴"},
+                            {name: "信银理财", rank: 3, assets: "2.13万亿", profit: "11.96亿", features: ["首次突破2万亿", "中信集团协同"], business: ["固收", "权益", "衍生品"], coopScore: 85, strategy: "信银理财依托中信集团，可开展集团内部协同、投研共享。", partners: ["中信银行", "中信证券"], status: "战略合作"},
+                            {name: "农银理财", rank: 4, assets: "1.97万亿", profit: "12.73亿", features: ["增速24%", "国有背景"], business: ["固收", "惠农理财"], coopScore: 75, strategy: "农银理财增速亮眼，可合作三农相关理财、乡村振兴项目。", partners: ["农业银行"], status: "重点突破"},
+                            {name: "工银理财", rank: 5, assets: "1.96万亿", profit: "约12亿", features: ["宇宙行背景", "风控严格"], business: ["固收", "养老理财"], coopScore: 60, strategy: "工银理财规模大但合作门槛高，需有特色产品或突出业绩才能进入。", partners: ["工商银行"], status: "待提升"},
+                            {name: "中银理财", rank: 6, assets: "1.88万亿", profit: "13.58亿", features: ["增速15%", "国际化背景"], business: ["跨境理财", "QDII"], coopScore: 65, strategy: "中银理财国际化特色强，可合作跨境产品、QDII投资。", partners: ["中国银行"], status: "重点突破"}
+                        ]
+                    },
+                    medium: { name: "千亿级理财子", icon: "⭐", desc: "管理规模5000亿-2万亿",
+                        institutions: [
+                            {name: "交银理财", rank: 7, assets: "1.62万亿", profit: "约10亿", features: ["增速31%", "创新产品"], business: ["固收", "混合", "权益"], coopScore: 80, strategy: "交银理财增速最高，发展潜力大，可提前布局合作。", partners: ["交通银行"], status: "战略合作"},
+                            {name: "建信理财", rank: 8, assets: "1.60万亿", profit: "约9亿", features: ["建设银行背景", "基建项目多"], business: ["基建理财", "固收"], coopScore: 70, strategy: "建信理财连接建行基建优势，可合作基建类资管项目。", partners: ["建设银行"], status: "重点突破"},
+                            {name: "中邮理财", rank: 9, assets: "1.02万亿", profit: "约7亿", features: ["增速32%", "邮储渠道"], business: ["固收", "乡村振兴"], coopScore: 75, strategy: "中邮理财增速第一，邮储渠道下沉，可合作下沉市场理财。", partners: ["邮储银行"], status: "重点突破"},
+                            {name: "光大理财", rank: 10, assets: "约8000亿", profit: "约6亿", features: ["光大集团", "创新试点"], business: ["固收+", "权益"], coopScore: 65, strategy: "光大理财创新能力强，可合作创新产品试点。", partners: ["光大银行"], status: "潜力合作"},
+                            {name: "平安理财", rank: 11, assets: "约7500亿", profit: "约5亿", features: ["平安集团", "科技赋能"], business: ["科技理财", "固收"], coopScore: 70, strategy: "平安理财可借助平安集团生态，开展综合金融合作。", partners: ["平安银行"], status: "重点突破"}
+                        ]
+                    },
+                    small: { name: "中小理财子", icon: "🌱", desc: "管理规模5000亿以下",
+                        institutions: [
+                            {name: "民生理财", rank: 15, assets: "约5000亿", features: ["民生银行", "小微特色"], business: ["小微理财", "固收"], coopScore: 60, strategy: "民生理财专注小微，可合作小微企业理财、供应链金融。", partners: ["民生银行"], status: "潜力合作"},
+                            {name: "浦银理财", rank: 16, assets: "约4500亿", features: ["浦发银行", "科技金融"], business: ["科技理财", "跨境"], coopScore: 55, strategy: "浦银理财可合作科技企业理财、跨境业务。", partners: ["浦发银行"], status: "潜力合作"},
+                            {name: "华夏理财", rank: 17, assets: "约4000亿", features: ["华夏银行", "绿色金融"], business: ["绿色金融", "京津冀"], coopScore: 50, strategy: "华夏理财可合作绿色金融、京津冀项目。", partners: ["华夏银行"], status: "潜力合作"},
+                            {name: "北京银行理财", rank: 18, assets: "约3500亿", features: ["北京银行", "文化金融"], business: ["文化理财", "科技"], coopScore: 55, strategy: "北京银行理财可合作文创产业、科技企业投资。", partners: ["北京银行"], status: "潜力合作"}
+                        ]
+                    }
+                }
+            },
+            securities: {
+                name: "📈 券商",
+                icon: "📈",
+                intro: "中国券商147家，头部券商合并趋势明显，行业格局正在重塑。",
+                sizes: {
+                    large: { name: "头部券商", icon: "🏆", desc: "资产规模5000亿以上，行业龙头",
+                        institutions: [
+                            {name: "中信证券", rank: 1, assets: "1.71万亿", profit: "231.59亿", features: ["行业一哥", "投行领先"], business: ["投资银行", "经纪业务", "资管"], coopScore: 85, strategy: "中信证券是行业标杆，可学习其资管业务模式，争取在其平台代销产品。", partners: ["中信建投", "华夏基金"], status: "战略合作"},
+                            {name: "国泰海通", rank: 2, assets: "1.73万亿", profit: "220.74亿", features: ["合并后最大", "投行强势"], business: ["投行", "机构服务", "财富管理"], coopScore: 80, strategy: "国泰海通合并后实力最强，可争取其代销或委外业务。", partners: ["国泰君安", "海通证券"], status: "战略合作"},
+                            {name: "华泰证券", rank: 3, assets: "8142亿", profit: "约180亿", features: ["科技赋能", "财富管理强", "APP领先"], business: ["财富管理", "互联网金融", "资管"], coopScore: 90, strategy: "华泰科技实力强，可合作量化投资、金融科技输出。涨乐财富通APP业内领先。", partners: ["华泰资管", "华泰柏瑞"], status: "核心伙伴"},
+                            {name: "广发证券", rank: 4, assets: "7587亿", profit: "约100亿", features: ["研究领先", "私募冠军"], business: ["研究", "私募", "财富管理"], coopScore: 75, strategy: "广发研究实力强，可合作投研服务、量化策略。", partners: ["广发基金", "广发资管"], status: "重点突破"},
+                            {name: "中国银河", rank: 5, assets: "约7000亿", profit: "约100亿", features: ["国家队", "机构业务强"], business: ["机构业务", "经纪", "资管"], coopScore: 70, strategy: "银河证券机构客户资源丰富，可开展机构业务合作。", partners: ["银河基金"], status: "重点突破"}
+                        ]
+                    },
+                    medium: { name: "中型券商", icon: "⭐", desc: "资产规模1000-5000亿",
+                        institutions: [
+                            {name: "国信证券", rank: 8, assets: "约4500亿", profit: "约80亿", features: ["经纪强势", "研究实力"], business: ["经纪", "研究", "创新业务"], coopScore: 70, strategy: "国信证券经纪强大，可合作代销、渠道共享。", partners: ["国信期货"], status: "重点突破"},
+                            {name: "招商证券", rank: 9, assets: "约4200亿", profit: "约75亿", features: ["招商背景", "机构服务"], business: ["机构服务", "投行", "财富管理"], coopScore: 75, strategy: "招商证券可借助招商银行渠道，合作私人银行客户。", partners: ["招商银行", "招商基金"], status: "战略合作"},
+                            {name: "中信建投", rank: 10, assets: "约4000亿", profit: "约70亿", features: ["投行强势", "债券领先"], business: ["投资银行", "债券", "研究"], coopScore: 65, strategy: "中信建投债券业务强，可合作债券投资、ABS业务。", partners: ["中信证券"], status: "潜力合作"},
+                            {name: "中金公司", rank: 11, assets: "约3800亿", profit: "约65亿", features: ["高端定位", "机构业务", "国际化"], business: ["机构业务", "投资银行", "财富管理"], coopScore: 70, strategy: "中金定位高端，可合作高净值客户、机构投资。", partners: ["中金基金"], status: "重点突破"},
+                            {name: "东方证券", rank: 12, assets: "约3500亿", profit: "约55亿", features: ["资管强势", "研究领先"], business: ["资管", "研究", "固收"], coopScore: 80, strategy: "东方证券资管实力强，可学习其模式或合作产品。", partners: ["东方资管", "汇添富"], status: "战略合作"},
+                            {name: "申万宏源", rank: 13, assets: "约3200亿", profit: "约50亿", features: ["研究老牌", "机构业务"], business: ["研究", "机构", "固收"], coopScore: 65, strategy: "申万研究有影响力，可合作投研服务。", partners: ["申万菱信"], status: "潜力合作"}
+                        ]
+                    },
+                    small: { name: "中小券商", icon: "🌱", desc: "资产规模1000亿以下，数量众多",
+                        institutions: [
+                            {name: "国联证券", rank: 20, assets: "约2500亿", profit: "约35亿", features: ["合并民生证券", "增长快"], business: ["财富管理", "资管", "投行"], coopScore: 75, strategy: "国联民生合并后实力大增，可作为中小券商合作标杆。", partners: ["民生证券"], status: "重点突破"},
+                            {name: "中邮证券", rank: 25, assets: "约1500亿", profit: "约15亿", features: ["邮政背景", "渠道下沉"], business: ["经纪", "资管"], coopScore: 60, strategy: "中邮证券依托邮储渠道，可合作下沉市场业务。", partners: ["中邮基金"], status: "潜力合作"},
+                            {name: "东吴证券", rank: 30, assets: "约1200亿", profit: "约12亿", features: ["研究特色", "协同战略"], business: ["研究", "财富管理"], coopScore: 55, strategy: "东吴证券研究有特色，可合作投研共享。", partners: [], status: "潜力合作"},
+                            {name: "财通证券", rank: 35, assets: "约1000亿", profit: "约10亿", features: ["浙江背景", "资管特色"], business: ["资管", "财富管理"], coopScore: 60, strategy: "财通证券资管有特色，可作为差异化合作对象。", partners: ["财通基金"], status: "潜力合作"},
+                            {name: "华安证券", rank
